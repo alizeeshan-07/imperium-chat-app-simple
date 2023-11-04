@@ -1,0 +1,10 @@
+streamlit
+PyPDF2
+openai
+chromadb==0.3.29
+pysqlite3-binary
+tiktoken
+langchain
+typing-inspect==0.8.0
+typing_extensions==4.5.0
+PyMuPDF
