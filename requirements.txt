@@ -1,6 +1,6 @@
 streamlit
 PyPDF2
-openai
+openai==0.28.1
 chromadb==0.3.29
 pysqlite3-binary
 tiktoken
