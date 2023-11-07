@@ -50,7 +50,7 @@ def read_and_textify(pdf_folder):
     return text_list, sources_list, file_streams
 
 # Streamlit page configuration
-st.set_page_config(layout="centered", page_title="DOXS")
+st.set_page_config(layout="centered", page_title="Imperium")
 st.header("Imperium")
 st.write("---")
 
