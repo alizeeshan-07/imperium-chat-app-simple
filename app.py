@@ -36,16 +36,22 @@ def read_and_textify(pdf_folder):
     sources_list = []
     file_streams = {}
     for pdf_path in glob.glob(os.path.join(pdf_folder, '*.pdf')):
-        with open(pdf_path, 'rb') as f:
-            file_stream = f.read()
-            file_name = os.path.basename(pdf_path)
-            file_streams[file_name] = file_stream
-            pdf = fitz.open(stream=file_stream)
-            for i in range(len(pdf)):
-                text = get_pdf_page_text(io.BytesIO(file_stream), i + 1)
-                text_list.append(text)
-                sources_list.append(file_name + "_page_" + str(i))
-            pdf.close()
+        try:
+            with open(pdf_path, 'rb') as f:
+                file_stream = f.read()
+                if not file_stream:  # Check if the file stream is empty
+                    st.error(f"The file {pdf_path} is empty.")
+                    continue
+                file_name = os.path.basename(pdf_path)
+                file_streams[file_name] = file_stream
+                pdf = fitz.open(stream=file_stream)
+                for i in range(len(pdf)):
+                    text = get_pdf_page_text(io.BytesIO(file_stream), i + 1)
+                    text_list.append(text)
+                    sources_list.append(file_name + "_page_" + str(i))
+                pdf.close()
+        except Exception as e:
+            st.error(f"An error occurred while processing {pdf_path}: {e}")
     return text_list, sources_list, file_streams
 
 # Streamlit page configuration
