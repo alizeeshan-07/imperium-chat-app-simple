@@ -4,6 +4,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain import OpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.chains import RetrievalQA
 import fitz  # PyMuPDF
 import io
 import os
