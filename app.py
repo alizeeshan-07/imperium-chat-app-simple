@@ -74,21 +74,23 @@ textify_output = read_and_textify(docs_folder)
 documents, sources, file_streams = textify_output
 
 # Extract embeddings
+# Extract embeddings
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 vStore = Chroma.from_texts(documents, embeddings, metadatas=[{"source": s} for s in sources])
 
 # Set up the model and retriever
-model_name = "gpt-4"
+model_name = "gpt-4-1106-preview"
 retriever = vStore.as_retriever()
 retriever.search_kwargs = {'k': 2}
 llm = OpenAI(model_name=model_name, openai_api_key=openai_api_key, streaming=True)
 model = RetrievalQAWithSourcesChain.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
+retriever = vStore.as_retriever(search_type="similarity", search_kwargs={"k":1})
 
 # Create the chain to answer questions
-rqa = RetrievalQAWithSourcesChain.from_chain_type(llm=OpenAI(model_name=model_name, openai_api_key=openai_api_key, streaming=True),
-                                                  chain_type="stuff",
-                                                  retriever=retriever)
-st.header("Ask your data")
+rqa = RetrievalQA.from_chain_type(llm=OpenAI(model_name=model_name, openai_api_key=openai_api_key, streaming=True),
+                                  chain_type="stuff",
+                                  retriever=retriever,
+                                  return_source_documents=True)
 user_q = st.text_area("Enter your questions here")
 
 if st.button("Get Response"):
@@ -100,10 +102,7 @@ if st.button("Get Response"):
             
             # Display the source document/part where the answer was derived from
             st.subheader('Source Document/Part:')
-            source_text = result['source_documents'][0]['content'].replace('\n', ' ')
-            source_text = reconstruct_paragraphs(source_text)
-            with st.expander("Show source text"):
-                st.text_area("", source_text, height=300, disabled=True)
+            st.write(result['source_documents'])
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
